@@ -1,0 +1,82 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Atelier: Paris workshop, stone grey paper, cognac leather, black ink, saddle-stitch details */
+@theme inline {
+  --color-background: var(--bg);
+  --color-border: var(--line);
+  --color-bg: var(--bg);
+  --color-bg2: var(--bg-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-leather: var(--leather);
+  --color-leathertext: var(--leather-text);
+  --color-stitch: #d9a868;
+  --color-btn: var(--btn);
+  --color-btnfg: var(--btn-fg);
+  --color-tint: var(--tint);
+  --font-display: var(--font-playfair), Didot, Georgia, serif;
+  --font-sans: var(--font-jost), system-ui, sans-serif;
+  --ease-silk: cubic-bezier(.32, .72, 0, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  --animate-marquee: marquee var(--duration) infinite linear;
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(calc(-100% - var(--gap))); } }
+}
+
+:root {
+  --bg: #f4f1ec; --bg-2: #ebe6de; --card: #fbfaf7; --ink: #1c1714; --soft: #6a5f57; --line: rgba(28, 23, 20, .12);
+  --leather: #8a4b24; --leather-text: #8a4b24; --btn: #1c1714; --btn-fg: #f4f1ec; --tint: #efe3d6;
+  --glass: rgba(244, 241, 236, .78); --hi: rgba(255, 255, 255, .85); --shadow: rgba(28, 23, 20, .18); --map: none;
+}
+.dark {
+  --bg: #15110f; --bg-2: #1b1613; --card: #211b17; --ink: #f2ebe2; --soft: #b4a698; --line: rgba(242, 235, 226, .1);
+  --leather: #b06d3c; --leather-text: #d9965f; --btn: #f2ebe2; --btn-fg: #161210; --tint: #33241a;
+  --glass: rgba(21, 17, 15, .74); --hi: rgba(255, 255, 255, .05); --shadow: rgba(0, 0, 0, .6);
+  --map: invert(.9) hue-rotate(180deg) saturate(.4);
+  color-scheme: dark;
+}
+
+@layer base {
+  html { overflow-x: clip; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; transition: background-color .5s var(--ease-silk), color .5s var(--ease-silk); }
+  p { text-wrap: pretty; }
+}
+
+body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .04; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+.glass { background: var(--glass); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); }
+.bezel { padding: 6px; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* theme change grows out of the switch that was pressed */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: grow .6s cubic-bezier(.7, 0, .3, 1); }
+@keyframes grow { from { clip-path: circle(0 at var(--rx, 100%) var(--ry, 0)); } to { clip-path: circle(var(--rr, 150vmax) at var(--rx, 100%) var(--ry, 0)); } }
+
+.rv { opacity: 0; transform: translateY(40px); filter: blur(8px); transition-property: opacity, transform, filter; transition-duration: 1s; transition-timing-function: cubic-bezier(.32, .72, 0, 1); }
+.rv.in { opacity: 1; transform: none; filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; filter: none; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+@media (prefers-reduced-transparency: reduce) { .glass { background: var(--bg); backdrop-filter: none; } }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.03; letter-spacing: -.02em; text-wrap: balance; }
+h1 em, h2 em { font-style: italic; color: var(--leather-text); }
+::selection { background: #8a4b24; color: #f4e7d3; }
+:focus-visible { outline: 2px solid var(--leather); outline-offset: 4px; border-radius: 10px; }
+/* theme change: a soft fade, like polish buffed in */
+::view-transition-old(root) { animation: fadeout .55s ease forwards; }
+::view-transition-new(root) { animation: fadein .55s ease forwards; }
+@keyframes fadeout { to { opacity: 0; filter: blur(4px); } }
+@keyframes fadein { from { opacity: 0; filter: blur(4px); } }
+/* leather: grain and a dashed saddle stitch */
+.leather { background-color: var(--leather); background-image: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.14), transparent 60%), repeating-radial-gradient(circle at 70% 80%, rgba(0,0,0,.05) 0 2px, transparent 2px 5px); }
+.stitched { position: relative; }
+.stitched::before { content: ""; position: absolute; inset: 14px; border: 2px dashed #d9a868; border-radius: inherit; opacity: .8; pointer-events: none; }
+@keyframes press { 0% { transform: scale(1.35) rotate(-20deg); opacity: .4; } 100% { transform: none; opacity: 1; } }
+.press { animation: press .5s cubic-bezier(.3, 1.6, .5, 1); }
